@@ -505,19 +505,21 @@ export const AuthScreen: React.FC<{ initialTab?: 'login' | 'register'; onAuthent
           </AnimatePresence>
 
           {/* Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-slate-200/80" />
+          <div className="relative flex items-center justify-center my-2">
+            <div className="w-full border-t border-slate-200" />
             <span className="bg-white px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider relative">
               or continue with
             </span>
-            {/* OAuth Buttons (Real Google & GitHub Popup Auth + Instant Guest Entry) */}
+          </div>
+
+          {/* OAuth Buttons (Real Google & GitHub Popup Auth + Instant Guest Entry) */}
           <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 disabled={submitting}
                 onClick={() => handleOAuth('google')}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer disabled:opacity-60"
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition shadow-2xs cursor-pointer disabled:opacity-60"
               >
                 <GoogleIcon />
                 <span>Google</span>
@@ -526,7 +528,7 @@ export const AuthScreen: React.FC<{ initialTab?: 'login' | 'register'; onAuthent
                 type="button"
                 disabled={submitting}
                 onClick={() => handleOAuth('github')}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer disabled:opacity-60"
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition shadow-2xs cursor-pointer disabled:opacity-60"
               >
                 <GitHubIcon />
                 <span>GitHub</span>
@@ -548,12 +550,12 @@ export const AuthScreen: React.FC<{ initialTab?: 'login' | 'register'; onAuthent
                   setSubmitting(false);
                 }
               }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-xs font-bold text-indigo-700 transition-all shadow-xs cursor-pointer disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100/80 text-xs font-bold text-indigo-700 transition shadow-2xs cursor-pointer disabled:opacity-60"
             >
               <User className="h-4 w-4 text-indigo-600" />
               <span>Instant Demo (1-Click Guest Entrance)</span>
             </button>
-          </div>          </div>
+          </div>
         </div>
 
         {/* Security & Owner-Bound Guarantee Footer Tag */}
