@@ -13,11 +13,21 @@ import { UserProfile, JournalSession, MemoryItem, MoodType, JournalMessage, Memo
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-// Security Headers (Helmet)
+// Security Headers (Helmet with Production CSP Directive Allowlist)
 app.use(helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false, // Vite dev server compatibility
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://apis.google.com", "https://www.gstatic.com", "https://www.google.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https:", "https://api.dicebear.com", "https://*.googleusercontent.com"],
+      connectSrc: ["'self'", "https:", "wss:", "http://localhost:*"],
+      frameSrc: ["'self'", "https://*.firebaseapp.com", "https://www.google.com"],
+    },
+  },
 }));
 
 // CORS Origin Allowlist Configuration
