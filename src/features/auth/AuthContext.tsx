@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInAnonymously,
   signOut,
   sendPasswordResetEmail,
   updateProfile,
@@ -22,6 +23,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (displayName: string, email: string, password: string) => Promise<void>;
   loginWithOAuth: (provider: 'google' | 'github') => Promise<void>;
+  loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<string>;
 }
@@ -149,6 +151,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Guest Instant Authentication (Demo / Trial mode)
+  const loginAsGuest = async () => {
+    setIsLoading(true);
+    try {
+      const userCredential = await signInAnonymously(auth);
+      const idToken = await userCredential.user.getIdToken();
+      apiService.setToken(idToken);
+      setToken(idToken);
+      setFirebaseUser(userCredential.user);
+      const profile = createProfileFromFirebaseUser(userCredential.user);
+      profile.displayName = 'Guest Journaler';
+      setUser(profile);
+      apiService.syncProfile(userCredential.user.uid, profile).catch(console.warn);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Sign out
   const logout = async () => {
     await signOut(auth);
@@ -175,6 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         loginWithOAuth,
+        loginAsGuest,
         logout,
         resetPassword,
       }}

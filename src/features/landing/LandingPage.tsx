@@ -409,10 +409,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthenticated }) => 
               >
                 <X className="h-4 w-4" />
               </button>
-              <AuthScreen onAuthenticated={() => {
-                setShowAuthModal(false);
-                onAuthenticated();
-              }} />
+              <AuthScreen
+                initialTab={authMode}
+                onAuthenticated={() => {
+                  setShowAuthModal(false);
+                  onAuthenticated();
+                }}
+              />
             </motion.div>
           </div>
         )}

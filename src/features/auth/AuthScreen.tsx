@@ -64,10 +64,13 @@ function formatFirebaseError(err: any): string {
   return err.message || 'Authentication failed. Please check your credentials.';
 }
 
-export const AuthScreen: React.FC<{ onAuthenticated?: () => void }> = ({ onAuthenticated }) => {
-  const { login, register, loginWithOAuth, resetPassword } = useAuth();
+export const AuthScreen: React.FC<{ initialTab?: 'login' | 'register'; onAuthenticated?: () => void }> = ({
+  initialTab = 'login',
+  onAuthenticated,
+}) => {
+  const { login, register, loginWithOAuth, loginAsGuest, resetPassword } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [activeTab, setActiveTab] = useState<'login' | 'register'>(initialTab);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -504,30 +507,50 @@ export const AuthScreen: React.FC<{ onAuthenticated?: () => void }> = ({ onAuthe
             <span className="bg-white px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider relative">
               or continue with
             </span>
-          </div>
+            {/* OAuth Buttons (Real Google & GitHub Popup Auth + Instant Guest Entry) */}
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => handleOAuth('google')}
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer disabled:opacity-60"
+              >
+                <GoogleIcon />
+                <span>Google</span>
+              </button>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => handleOAuth('github')}
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer disabled:opacity-60"
+              >
+                <GitHubIcon />
+                <span>GitHub</span>
+              </button>
+            </div>
 
-          {/* OAuth Buttons (Real Google & GitHub Popup Auth) */}
-          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               disabled={submitting}
-              onClick={() => handleOAuth('google')}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer disabled:opacity-60"
+              onClick={async () => {
+                setSubmitting(true);
+                setErrorMessage(null);
+                try {
+                  await loginAsGuest();
+                  onAuthenticated?.();
+                } catch (err: any) {
+                  setErrorMessage(formatFirebaseError(err));
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-xs font-bold text-indigo-700 transition-all shadow-xs cursor-pointer disabled:opacity-60"
             >
-              <GoogleIcon />
-              <span>Google</span>
+              <User className="h-4 w-4 text-indigo-600" />
+              <span>Instant Demo (1-Click Guest Entrance)</span>
             </button>
-
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={() => handleOAuth('github')}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer disabled:opacity-60"
-            >
-              <GitHubIcon />
-              <span>GitHub</span>
-            </button>
-          </div>
+          </div>          </div>
         </div>
 
         {/* Security & Owner-Bound Guarantee Footer Tag */}
