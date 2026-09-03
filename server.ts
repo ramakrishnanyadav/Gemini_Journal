@@ -15,19 +15,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-// Security Headers (Helmet with Production CSP Directive Allowlist)
+// Security Headers (Helmet with CSP disabled for Vite React SPA static asset compatibility)
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://apis.google.com", "https://www.gstatic.com", "https://www.google.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "blob:", "https:", "https://api.dicebear.com", "https://*.googleusercontent.com"],
-      connectSrc: ["'self'", "https:", "wss:", "http://localhost:*"],
-      frameSrc: ["'self'", "https://*.firebaseapp.com", "https://www.google.com"],
-    },
-  },
+  contentSecurityPolicy: false,
 }));
 
 // CORS Origin Allowlist Configuration
