@@ -83,6 +83,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, []);
 
+  const createProfileFromFirebaseUser = (fbUser: FirebaseUser): UserProfile => ({
+    uid: fbUser.uid,
+    displayName: fbUser.displayName || fbUser.email?.split('@')[0] || 'Owner',
+    email: fbUser.email || '',
+    avatar: fbUser.photoURL || `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(fbUser.uid)}`,
+    createdAt: fbUser.metadata.creationTime || new Date().toISOString(),
+  });
+
   // Email & Password Sign-In
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -92,6 +100,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       apiService.setToken(idToken);
       setToken(idToken);
       setFirebaseUser(userCredential.user);
+      const profile = createProfileFromFirebaseUser(userCredential.user);
+      setUser(profile);
+      apiService.syncProfile(userCredential.user.uid, profile).catch(console.warn);
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +113,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
-      // Set Firebase Auth Display Name
       if (displayName.trim()) {
         await updateProfile(userCredential.user, {
           displayName: displayName.trim(),
@@ -112,6 +122,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       apiService.setToken(idToken);
       setToken(idToken);
       setFirebaseUser(userCredential.user);
+      const profile = createProfileFromFirebaseUser(userCredential.user);
+      if (displayName.trim()) profile.displayName = displayName.trim();
+      setUser(profile);
+      apiService.syncProfile(userCredential.user.uid, profile).catch(console.warn);
     } finally {
       setIsLoading(false);
     }
@@ -127,6 +141,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       apiService.setToken(idToken);
       setToken(idToken);
       setFirebaseUser(userCredential.user);
+      const profile = createProfileFromFirebaseUser(userCredential.user);
+      setUser(profile);
+      apiService.syncProfile(userCredential.user.uid, profile).catch(console.warn);
     } finally {
       setIsLoading(false);
     }
