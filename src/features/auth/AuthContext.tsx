@@ -39,13 +39,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, async (currentFbUser) => {
       try {
         if (currentFbUser) {
-          // Cryptographically signed ID token directly from Firebase Auth
-          const idToken = await currentFbUser.getIdToken();
-          apiService.setToken(idToken);
-          setToken(idToken);
+          let idToken: string | null = null;
+          try {
+            idToken = await currentFbUser.getIdToken(/* forceRefresh */ false);
+            apiService.setToken(idToken);
+            setToken(idToken);
+          } catch (tokenErr) {
+            console.warn('[AuthContext] getIdToken error:', tokenErr);
+          }
+
           setFirebaseUser(currentFbUser);
 
-          // Build or sync profile with Cloud Firestore backend
           const profile: UserProfile = {
             uid: currentFbUser.uid,
             displayName: currentFbUser.displayName || currentFbUser.email?.split('@')[0] || 'Owner',
@@ -54,27 +58,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             createdAt: currentFbUser.metadata.creationTime || new Date().toISOString(),
           };
 
-          // Sync with Firestore profile store via Express API
-          try {
-            await apiService.syncProfile(currentFbUser.uid, profile);
-          } catch (syncErr) {
-            console.warn('Profile background sync:', syncErr);
+          // Background profile sync attempt (non-blocking)
+          if (idToken) {
+            apiService.syncProfile(currentFbUser.uid, profile).catch((syncErr) => {
+              console.warn('[AuthContext] Background profile sync warning:', syncErr);
+            });
           }
 
           setUser(profile);
         } else {
-          // Unauthenticated: clean state, show login screen. Never fallback to a demo user.
+          // Unauthenticated: clean state, show login screen.
           setUser(null);
           setFirebaseUser(null);
           setToken(null);
           apiService.setToken(null);
         }
       } catch (err) {
-        console.error('Firebase onAuthStateChanged error:', err);
-        setUser(null);
-        setFirebaseUser(null);
-        setToken(null);
-        apiService.setToken(null);
+        console.error('[AuthContext] onAuthStateChanged error:', err);
       } finally {
         setIsLoading(false);
       }
