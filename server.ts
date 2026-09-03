@@ -24,14 +24,20 @@ app.use(helmet({
 // CORS Origin Allowlist Configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
-  : ['http://localhost:3000', 'http://localhost:5173'];
+  : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:3005'];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin.includes('.onrender.com') ||
+      origin.includes('.vercel.app') ||
+      process.env.NODE_ENV !== 'production'
+    ) {
       callback(null, true);
     } else {
-      callback(new Error('CORS request blocked by origin allowlist policy.'));
+      callback(new Error(`CORS request blocked by origin allowlist policy for origin: ${origin}`));
     }
   },
   credentials: true,
