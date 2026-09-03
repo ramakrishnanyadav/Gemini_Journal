@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile document stored under /users/{userId}/profile",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "User's display name"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's registered email address"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of account registration"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Optional avatar URL"
+        }
+      },
+      "required": ["displayName", "email", "createdAt"]
+    },
+    "JournalSession": {
+      "title": "JournalSession",
+      "description": "A single journaling session with Gemini reflective conversation",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique session identifier"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title or theme of the reflection"
+        },
+        "mood": {
+          "type": "string",
+          "description": "Dominant emotional mood tag"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        },
+        "summary": {
+          "type": "string",
+          "description": "AI distilled summary of the reflection"
+        }
+      },
+      "required": ["id", "userId", "title", "createdAt"]
+    },
+    "MemoryItem": {
+      "title": "MemoryItem",
+      "description": "Distilled breakthrough realization, habit, or gratitude memory",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique memory identifier"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID"
+        },
+        "content": {
+          "type": "string",
+          "description": "The distilled memory text"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of memory: breakthrough, habit, gratitude, goal, reflection"
+        },
+        "extractedAt": {
+          "type": "string",
+          "description": "ISO timestamp when memory was captured"
+        },
+        "pinned": {
+          "type": "boolean",
+          "description": "Whether the memory is pinned to memory compass"
+        }
+      },
+      "required": ["id", "userId", "content", "category", "extractedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/profile": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Private user profile"
+    },
+    "/users/{userId}/sessions/{sessionId}": {
+      "schema": {
+        "$ref": "#/entities/JournalSession"
+      },
+      "description": "User journal reflection sessions"
+    },
+    "/users/{userId}/memories/{memoryId}": {
+      "schema": {
+        "$ref": "#/entities/MemoryItem"
+      },
+      "description": "User distilled memories and core insights"
+    }
+  }
+}

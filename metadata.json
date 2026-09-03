@@ -1,0 +1,7 @@
+{
+  "name": "Personal Gemini Journal",
+  "description": "Your private space to think out loud, with Gemini. End-to-end owner-bound journaling, AI reflection companions, and emotional memory insights.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
