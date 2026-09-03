@@ -32,7 +32,8 @@ describe('AuthScreen Component Tests', () => {
     expect(screen.getByText('Personal Gemini Journal')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^Sign In$/i })).toBeInTheDocument();
+    const signInButtons = screen.getAllByRole('button', { name: /^Sign In$/i });
+    expect(signInButtons.length).toBeGreaterThanOrEqual(2);
   });
 
   it('Renders Google OAuth sign-in option', () => {
