@@ -61,6 +61,9 @@ function formatFirebaseError(err: any): string {
   if (code === 'auth/popup-blocked') {
     return 'Popup was blocked by your browser. Please allow popups for sign in.';
   }
+  if (code === 'auth/missing-initial-state' || err?.message?.includes('missing initial state')) {
+    return 'Browser sessionStorage blocked OAuth state. Please use "Instant Demo (1-Click Guest Entrance)" or Email Sign In / Sign Up.';
+  }
   return err.message || 'Authentication failed. Please check your credentials.';
 }
 

@@ -1,7 +1,8 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, GithubAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, getToken, AppCheck } from 'firebase/app-check';
+
 const defaultConfig = {
   projectId: 'gen-lang-client-0011052197',
   appId: '1:125624824526:web:fe587d534df1bcf908969f',
@@ -24,6 +25,13 @@ const firebaseConfig = {
 // Initialize Firebase client app singleton
 export const firebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
+
+// Enforce browserLocalPersistence to prevent storage-partitioning / missing initial state errors in Chrome & Safari
+if (typeof window !== 'undefined') {
+  setPersistence(auth, browserLocalPersistence).catch((err) => {
+    console.warn('[Firebase Auth] Failed to set browserLocalPersistence:', err);
+  });
+}
 export const db = defaultConfig.firestoreDatabaseId && defaultConfig.firestoreDatabaseId !== '(default)'
   ? getFirestore(firebaseApp, defaultConfig.firestoreDatabaseId)
   : getFirestore(firebaseApp);
