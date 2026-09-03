@@ -36,11 +36,14 @@ describe('AuthScreen Component Tests', () => {
     expect(signInButtons.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('Renders Google OAuth sign-in option', () => {
+  it('Renders Google & GitHub OAuth sign-in options', () => {
     render(<AuthScreen />);
 
-    const googleBtn = screen.getByRole('button', { name: /Continue with Google/i });
+    const googleBtn = screen.getByRole('button', { name: /Google/i });
     expect(googleBtn).toBeInTheDocument();
+
+    const githubBtn = screen.getByRole('button', { name: /GitHub/i });
+    expect(githubBtn).toBeInTheDocument();
 
     fireEvent.click(googleBtn);
     expect(mockLoginWithOAuth).toHaveBeenCalledWith('google');

@@ -7,8 +7,11 @@ import path from 'path';
 
 let app: App;
 
-let projectId = process.env.FIREBASE_PROJECT_ID;
-let firestoreDbId: string | undefined;
+const defaultProjectId = 'gen-lang-client-0011052197';
+const defaultFirestoreDbId = 'ai-studio-personalgeminijo-e0167b3a-3188-48d6-8f0e-ffb3db56798d';
+
+let projectId = process.env.FIREBASE_PROJECT_ID || defaultProjectId;
+let firestoreDbId: string | undefined = process.env.FIRESTORE_DATABASE_ID || defaultFirestoreDbId;
 
 try {
   const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
