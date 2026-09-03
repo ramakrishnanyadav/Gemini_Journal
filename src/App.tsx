@@ -41,27 +41,66 @@ function JournalAppContent() {
 
   const loadUserData = async () => {
     if (!user) return;
+    setLoadingData(true);
+
+    let loadedSessions: JournalSession[] = [];
+    let loadedMemories: MemoryItem[] = [];
+    let loadedAnalytics: MoodAnalyticsData | null = null;
+
     try {
-      setLoadingData(true);
-      const [sessionsData, memoriesData, analyticsData] = await Promise.all([
+      const [sessionsRes, memoriesRes, analyticsRes] = await Promise.allSettled([
         apiService.getSessions(user.uid),
         apiService.getMemories(user.uid),
         apiService.getAnalytics(user.uid),
       ]);
-      setSessions(sessionsData);
-      setMemories(memoriesData);
-      setAnalytics(analyticsData);
 
-      if (sessionsData.length > 0) {
-        setCurrentSession((prev) => (prev ? sessionsData.find((s) => s.id === prev.id) || sessionsData[0] : sessionsData[0]));
+      if (sessionsRes.status === 'fulfilled') {
+        loadedSessions = sessionsRes.value || [];
+      }
+      if (memoriesRes.status === 'fulfilled') {
+        loadedMemories = memoriesRes.value || [];
+      }
+      if (analyticsRes.status === 'fulfilled') {
+        loadedAnalytics = analyticsRes.value || null;
+      }
+
+      setSessions(loadedSessions);
+      setMemories(loadedMemories);
+      setAnalytics(loadedAnalytics);
+
+      if (loadedSessions.length > 0) {
+        setCurrentSession((prev) => (prev ? loadedSessions.find((s) => s.id === prev.id) || loadedSessions[0] : loadedSessions[0]));
       } else {
-        // Create an initial blank reflection session if user has none
-        const newSession = await apiService.createSession(user.uid, {
-          title: `Reflection: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
-          mood: 'reflective',
-        });
-        setSessions([newSession]);
-        setCurrentSession(newSession);
+        // Create initial reflection session with fallback
+        try {
+          const newSession = await apiService.createSession(user.uid, {
+            title: `Reflection: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+            mood: 'reflective',
+          });
+          setSessions([newSession]);
+          setCurrentSession(newSession);
+        } catch (createErr) {
+          console.warn('[App] Local session fallback initialization:', createErr);
+          const fallbackSession: JournalSession = {
+            id: `session-local-${Date.now()}`,
+            userId: user.uid,
+            title: `Reflection: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+            mood: 'reflective',
+            messages: [
+              {
+                id: `msg-welcome-${Date.now()}`,
+                sender: 'ai',
+                content: `Welcome to your private reflection space, ${user.displayName}! What is on your mind today?`,
+                timestamp: new Date().toISOString(),
+                mood: 'reflective',
+              },
+            ],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          setSessions([fallbackSession]);
+          setCurrentSession(fallbackSession);
+        }
       }
     } catch (err) {
       console.error('Failed to load user journal data:', err);
