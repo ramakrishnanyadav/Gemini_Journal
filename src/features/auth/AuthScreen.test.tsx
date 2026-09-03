@@ -6,6 +6,7 @@ import { AuthScreen } from './AuthScreen';
 const mockLogin = vi.fn();
 const mockRegister = vi.fn();
 const mockLoginWithOAuth = vi.fn();
+const mockLoginAsGuest = vi.fn();
 const mockResetPassword = vi.fn();
 
 vi.mock('./AuthContext', () => ({
@@ -18,6 +19,7 @@ vi.mock('./AuthContext', () => ({
     login: mockLogin,
     register: mockRegister,
     loginWithOAuth: mockLoginWithOAuth,
+    loginAsGuest: mockLoginAsGuest,
     logout: vi.fn(),
     resetPassword: mockResetPassword,
   }),
@@ -30,17 +32,14 @@ describe('AuthScreen Component Tests', () => {
     expect(screen.getByText('Personal Gemini Journal')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Sign In to Journal/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Sign In$/i })).toBeInTheDocument();
   });
 
-  it('Renders OAuth sign-in options for Google and GitHub', () => {
+  it('Renders Google OAuth sign-in option', () => {
     render(<AuthScreen />);
 
-    const googleBtn = screen.getByRole('button', { name: /Google/i });
+    const googleBtn = screen.getByRole('button', { name: /Continue with Google/i });
     expect(googleBtn).toBeInTheDocument();
-
-    const githubBtn = screen.getByRole('button', { name: /GitHub/i });
-    expect(githubBtn).toBeInTheDocument();
 
     fireEvent.click(googleBtn);
     expect(mockLoginWithOAuth).toHaveBeenCalledWith('google');
@@ -49,10 +48,10 @@ describe('AuthScreen Component Tests', () => {
   it('Renders Forgot Password trigger and opens modal', () => {
     render(<AuthScreen />);
 
-    const forgotBtn = screen.getByRole('button', { name: /Forgot password\?/i });
+    const forgotBtn = screen.getByRole('button', { name: /Forgot\?/i });
     expect(forgotBtn).toBeInTheDocument();
     fireEvent.click(forgotBtn);
 
-    expect(screen.getByText('Reset Your Password')).toBeInTheDocument();
+    expect(screen.getByText('Reset Password')).toBeInTheDocument();
   });
 });
