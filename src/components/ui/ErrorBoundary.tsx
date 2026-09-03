@@ -1,17 +1,17 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React from 'react';
 import { ShieldAlert, RefreshCw, Terminal } from 'lucide-react';
 
 interface Props {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 interface State {
   hasError: boolean;
   error: Error | null;
-  errorInfo: ErrorInfo | null;
+  errorInfo: React.ErrorInfo | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -25,7 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error, errorInfo: null };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('[React Error Boundary Caught]:', error, errorInfo);
     this.setState({ errorInfo });
   }
@@ -40,8 +40,8 @@ export class ErrorBoundary extends Component<Props, State> {
                 <ShieldAlert className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-slate-100">Application Initialization Warning</h1>
-                <p className="text-xs text-slate-400">Personal Gemini Journal Runtime Shield</p>
+                <h1 className="text-lg font-semibold text-slate-100">Application Runtime Shield</h1>
+                <p className="text-xs text-slate-400">Personal Gemini Journal Security System</p>
               </div>
             </div>
 
