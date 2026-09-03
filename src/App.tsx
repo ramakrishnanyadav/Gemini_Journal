@@ -89,10 +89,10 @@ function JournalAppContent() {
             messages: [
               {
                 id: `msg-welcome-${Date.now()}`,
-                sender: 'ai',
-                content: `Welcome to your private reflection space, ${user.displayName}! What is on your mind today?`,
+                sender: 'gemini',
+                text: `Welcome to your private reflection space, ${user.displayName}! What is on your mind today?`,
                 timestamp: new Date().toISOString(),
-                mood: 'reflective',
+                sentiment: 'reflective',
               },
             ],
             createdAt: new Date().toISOString(),
