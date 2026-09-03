@@ -1,7 +1,7 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import React from 'react';
 
 interface Props {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 interface State {
@@ -9,29 +9,26 @@ interface State {
   error: string;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      hasError: false,
-      error: '',
-    };
-  }
+export class ErrorBoundary extends React.Component<Props, State> {
+  override state: State = {
+    hasError: false,
+    error: '',
+  };
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error: error?.message || 'Unknown error' };
+    return { hasError: true, error: error?.message || 'An unexpected runtime error occurred.' };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('[React Error Boundary]:', error, errorInfo);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6 font-sans">
           <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
-            <h1 className="text-lg font-semibold text-red-400">Application Error</h1>
+            <h1 className="text-lg font-semibold text-red-400">Application Error Shield</h1>
             <p className="text-xs text-slate-300 font-mono">{this.state.error}</p>
             <button
               onClick={() => window.location.reload()}
