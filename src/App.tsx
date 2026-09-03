@@ -15,6 +15,8 @@ import { Loader2 } from 'lucide-react';
 
 import { ToastProvider } from './components/ui/ToastContext';
 
+import { LandingPage } from './features/landing/LandingPage';
+
 function JournalAppContent() {
   const { user, isAuthenticated, isLoading } = useAuth();
 
@@ -162,7 +164,7 @@ function JournalAppContent() {
   }
 
   if (!isAuthenticated || !user) {
-    return <AuthScreen onAuthenticated={loadUserData} />;
+    return <LandingPage onAuthenticated={loadUserData} />;
   }
 
   return (
