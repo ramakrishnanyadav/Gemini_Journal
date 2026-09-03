@@ -23,7 +23,7 @@ export interface OwnerAuthenticatedRequest extends Request {
  */
 export async function verifyAppCheck(req: OwnerAuthenticatedRequest, res: Response, next: NextFunction) {
   const appCheckToken = (req.headers['x-firebase-appcheck'] as string) || '';
-  const enforceAppCheck = process.env.ENFORCE_APP_CHECK === 'true' || process.env.NODE_ENV === 'production';
+  const enforceAppCheck = process.env.ENFORCE_APP_CHECK !== 'false' && (process.env.ENFORCE_APP_CHECK === 'true' || process.env.NODE_ENV === 'production');
 
   if (!appCheckToken) {
     if (enforceAppCheck) {
@@ -32,7 +32,7 @@ export async function verifyAppCheck(req: OwnerAuthenticatedRequest, res: Respon
         state: 'app_check_missing',
       });
     }
-    // If not strictly enforced in non-production, proceed
+    // Proceed if App Check is not explicitly enabled
     return next();
   }
 
